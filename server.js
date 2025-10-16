@@ -1,18 +1,30 @@
 const express = require('express');
 const cors = require('cors');
 const { Sequelize, DataTypes } = require('sequelize');
+require('dotenv').config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-//Conexión a PostgreSQL
-const sequelize = new Sequelize('ejemplo_bff', 'postgres', 'randycairo17', {
-  host: 'localhost',
-  dialect: 'postgres',
-});
+// Conexión a PostgreSQL usando variables de entorno
+const sequelize = new Sequelize(
+  process.env.DB_NAME,
+  process.env.DB_USER,
+  process.env.DB_PASSWORD,
+  {
+    host: process.env.DB_HOST,
+    dialect: 'postgres',
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
+    }
+  }
+);
 
-//Modelo de usuarios
+// Modelo de usuarios
 const Usuario = sequelize.define('Usuario', {
   nombre: { type: DataTypes.STRING, allowNull: false },
   email: { type: DataTypes.STRING, allowNull: false }
@@ -21,7 +33,7 @@ const Usuario = sequelize.define('Usuario', {
   timestamps: false
 });
 
-//Ruta BFF para obtener usuarios
+// Ruta BFF para obtener usuarios
 app.get('/api/usuarios', async (req, res) => {
   try {
     const usuarios = await Usuario.findAll();
@@ -31,14 +43,14 @@ app.get('/api/usuarios', async (req, res) => {
   }
 });
 
-//Iniciar servidor
-const PORT = 3000;
+// Iniciar servidor
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, async () => {
   try {
     await sequelize.authenticate();
-    console.log('Conexión a PostgreSQL exitosa');
-    console.log(`Servidor corriendo en http://localhost:${PORT}`);
+    console.log('✅ Conexión a PostgreSQL exitosa');
+    console.log(`Servidor corriendo en puerto ${PORT}`);
   } catch (error) {
-    console.error('No se pudo conectar a PostgreSQL:', error);
+    console.error('❌ No se pudo conectar a PostgreSQL:', error);
   }
 });

@@ -9,11 +9,11 @@ app.use(express.json());
 
 // Conexión a PostgreSQL usando variables de entorno
 const sequelize = new Sequelize(
-  process.env.DB_NAME,
-  process.env.DB_USER,
-  process.env.DB_PASSWORD,
+  process.env.DB_NAME=ejemplo_bff,
+  process.env.DB_USER=ejemplo_bff_user,
+  process.env.DB_PASSWORD=dpg-d3ogsbeuk2gs73cqkr50-a.oregon-postgres.render.com,
   {
-    host: process.env.DB_HOST,
+    host: process.env.DB_HOST=dpg-d3ogsbeuk2gs73cqkr50-a.oregon-postgres.render.com,
     dialect: 'postgres',
     dialectOptions: {
       ssl: {
@@ -23,6 +23,7 @@ const sequelize = new Sequelize(
     }
   }
 );
+
 
 // Modelo de usuarios
 const Usuario = sequelize.define('Usuario', {

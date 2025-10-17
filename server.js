@@ -1,10 +1,10 @@
-const express = require('express');
+const express = require('express'); 
 const cors = require('cors');
 const { Sequelize, DataTypes } = require('sequelize');
 require('dotenv').config();
 
 const app = express();
-app.use(cors());
+app.use(cors()); // Permite conexiones desde cualquier origen (Vercel)
 app.use(express.json());
 
 // Conexión a PostgreSQL usando variables de entorno
@@ -24,12 +24,11 @@ const sequelize = new Sequelize(
   }
 );
 
-
 // Modelo de usuarios
 const Usuario = sequelize.define('Usuario', {
   nombre: { type: DataTypes.STRING, allowNull: false },
   email: { type: DataTypes.STRING, allowNull: false }
-}, {
+}, { 
   tableName: 'usuarios',
   timestamps: false
 });
@@ -39,6 +38,24 @@ app.get('/api/usuarios', async (req, res) => {
   try {
     const usuarios = await Usuario.findAll();
     res.json(usuarios);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Nueva ruta BFF para crear usuarios desde el frontend
+app.post('/api/usuarios', async (req, res) => {
+  try {
+    const { nombre, email } = req.body;
+
+    // Validación básica
+    if (!nombre || !email) {
+      return res.status(400).json({ error: 'Nombre y email son obligatorios' });
+    }
+
+    // Crear el usuario en la base de datos
+    const nuevoUsuario = await Usuario.create({ nombre, email });
+    res.status(201).json(nuevoUsuario);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -55,3 +72,4 @@ app.listen(PORT, async () => {
     console.error('❌ No se pudo conectar a PostgreSQL:', error);
   }
 });
+

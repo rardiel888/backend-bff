@@ -15,11 +15,11 @@ const sequelize = new Sequelize(
   {
     host: process.env.DB_HOST,
     dialect: 'postgres',
-    dialectOptions: {
-      ssl: {
-        require: true,
-        rejectUnauthorized: false
-      }
+dialectOptions: process.env.DB_HOST.includes('localhost') ? {} : {
+  ssl: {
+    require: true,
+    rejectUnauthorized: false
+  }
     }
   }
 );

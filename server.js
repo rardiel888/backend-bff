@@ -71,5 +71,10 @@ app.listen(PORT, async () => {
   } catch (error) {
     console.error('❌ No se pudo conectar a PostgreSQL:', error);
   }
+
+  app.get('/api/hola', (req, res) => {
+  res.json({ mensaje: 'Hola, aquí funciona 🎉' });
+});
+
 });
 
